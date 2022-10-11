@@ -1,6 +1,11 @@
 #pragma once
 
+#include "constans.hpp"
+#include "fireitemdelegate.h"
+#include "firetablemodel.h"
+#include "qcustomplot.h"
 #include <QMainWindow>
+#include <memory>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -13,8 +18,20 @@ class MainWindow : public QMainWindow {
 
 public:
   MainWindow(QWidget *parent = nullptr);
-  ~MainWindow();
+  void setupPlot();
+  void setupTable();
+
+public slots:
+  void changeStepCell(const QModelIndex &index);
+  void syncPlotWithTable();
+  void syncPlotWithCell(const QModelIndex &index);
 
 private:
-  Ui::MainWindow *ui;
+  Ui::MainWindow *mUi;
+
+  std::unique_ptr<QCPColorMap> mColorMap;
+  std::unique_ptr<QCPColorScale> mColorScale;
+  std::unique_ptr<QCPMarginGroup> mPlotScaleGroup;
+
+  std::unique_ptr<FireTableModel> mMathModel;
 };

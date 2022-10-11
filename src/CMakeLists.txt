@@ -8,19 +8,20 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets PrintSupport)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets PrintSupport)
 
 set(PROJECT_SOURCES
+        res.qrc
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        qcustomplot.cpp
-        qcustomplot.h
+        constans.hpp
+        qcustomplot.h qcustomplot.cpp
+        firetablemodel.h firetablemodel.cpp
+        fireitemdelegate.h fireitemdelegate.cpp
+        mainwindow.h mainwindow.cpp mainwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
