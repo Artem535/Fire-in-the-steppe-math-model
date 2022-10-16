@@ -36,23 +36,84 @@
           <item>
            <widget class="QWidget" name="widget_3" native="true">
             <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
               <widget class="QLabel" name="label">
                <property name="text">
-                <string>Время шага (сек)</string>
+                <string>Время шага (msec)</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBox">
-               <property name="decimals">
-                <number>5</number>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
+              <widget class="QSpinBox" name="timeIntervalSpinBox">
+               <property name="maximum">
+                <number>1000000</number>
                </property>
                <property name="value">
-                <double>1.000000000000000</double>
+                <number>100</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="interpolatePlotBox">
+            <property name="text">
+             <string>Включить интерполяцию</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="increasePlotCountBox">
+            <property name="text">
+             <string>Повысить качества графика</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="countCellWidget" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>1 ячейка = </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="countCellSpinBox">
+               <property name="minimum">
+                <number>1</number>
                </property>
               </widget>
              </item>
@@ -78,14 +139,24 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="resetButton">
                <property name="text">
-                <string>Старт</string>
+                <string>Сброс</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="runButton">
+               <property name="text">
+                <string>Старт</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="stepButton">
                <property name="text">
                 <string>Шаг</string>
                </property>
@@ -121,10 +192,10 @@
              <number>10</number>
             </attribute>
             <attribute name="horizontalHeaderStretchLastSection">
-             <bool>false</bool>
+             <bool>true</bool>
             </attribute>
             <attribute name="verticalHeaderStretchLastSection">
-             <bool>false</bool>
+             <bool>true</bool>
             </attribute>
            </widget>
           </item>

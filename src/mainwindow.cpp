@@ -9,9 +9,51 @@ MainWindow::MainWindow(QWidget *parent)
 
   setupPlot();
   setupTable();
-
+  // Make group invisible. It appeare only, when 'increasePlotCountBox' is
+  // checked.
+  mUi->countCellWidget->setVisible(false);
+  mUi->increasePlotCountBox->setVisible(false);
+  // Connections
   connect(mUi->tableView, &QTableView::clicked, this,
           &MainWindow::changeStepCell);
+
+  connect(mUi->stepButton, &QAbstractButton::clicked, this,
+          &MainWindow::makeStep);
+
+  connect(mUi->interpolatePlotBox, &QCheckBox::toggled, [&](bool checked) {
+    mColorMap->setInterpolate(checked);
+    mUi->plot->replot();
+  });
+
+  connect(mUi->resetButton, &QAbstractButton::clicked, this,
+          &MainWindow::syncPlotWithTable);
+
+  connect(mUi->increasePlotCountBox, &QCheckBox::toggled, [&](bool checked) {
+    if (checked)
+      mColorMap->data()->setSize(Constans::Plot::increasedCountCell,
+                                 Constans::Plot::increasedCountCell);
+    else {
+      mColorMap->data()->setSize(Constans::Plot::countCell,
+                                 Constans::Plot::countCell);
+      mUi->countCellSpinBox->setValue(1);
+    }
+
+    mUi->countCellWidget->setVisible(checked);
+    syncPlotWithTable();
+    mUi->plot->replot();
+  });
+
+  // Timer connections.
+  connect(mUi->timeIntervalSpinBox, qOverload<int>(&QSpinBox::valueChanged),
+          &mTimer, qOverload<int>(&QTimer::setInterval));
+
+  connect(mUi->runButton, &QAbstractButton::toggled,
+          [&](bool checked) { (checked) ? mTimer.start() : mTimer.stop(); });
+
+  connect(&mTimer, &QTimer::timeout, [&]() {
+    makeStep();
+    mTimer.start(mUi->timeIntervalSpinBox->value());
+  });
 }
 
 void MainWindow::setupPlot() {
@@ -20,9 +62,12 @@ void MainWindow::setupPlot() {
   if (plot->openGl())
     plot->setOpenGl(true);
 
+  // xAxis2 because
   mColorMap = std::make_unique<QCPColorMap>(plot->xAxis, plot->yAxis);
+  plot->yAxis->setRangeReversed(true);
   // Interpolate improve quality.
-  mColorMap->setInterpolate(true);
+  mColorMap->setInterpolate(false);
+  mColorMap->setTightBoundary(true);
   // Setup data initial value - 1.
   mColorMap->data()->setSize(Constans::Plot::countCell,
                              Constans::Plot::countCell);
@@ -79,10 +124,15 @@ void MainWindow::changeStepCell(const QModelIndex &index) {
 }
 
 void MainWindow::syncPlotWithTable() {
-  for (int i = 0; i < Constans::Table::countCell; ++i) {
-    for (int j = 0; j < Constans::Table::countCell; ++j) {
+  int size = (mUi->increasePlotCountBox->isChecked())
+                 ? Constans::Plot::increasedCountCell
+                 : Constans::Plot::countCell;
+  int countCell = mUi->countCellSpinBox->value();
+
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
       auto index = mMathModel->index(i, j);
-      mColorMap->data()->setCell(i, j, mMathModel->data(index).toInt());
+      mColorMap->data()->setCell(j, i, mMathModel->data(index).toInt());
     }
   }
   mUi->plot->replot();
@@ -90,7 +140,49 @@ void MainWindow::syncPlotWithTable() {
 
 void MainWindow::syncPlotWithCell(const QModelIndex &index) {
   auto [row, column] = std::make_pair(index.row(), index.column());
-  auto t = index.data().toInt();
   mColorMap->data()->setCell(column, row, index.data().toInt());
+  mUi->plot->replot();
+}
+
+void MainWindow::makeStep() {
+  int size = (mUi->increasePlotCountBox->isChecked())
+                 ? Constans::Plot::increasedCountCell
+                 : Constans::Plot::countCell;
+
+  std::vector<std::vector<short>> tmpMatrix(size, std::vector<short>(size, 0));
+
+  // Copy current step to tmp.
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      tmpMatrix[i][j] = mColorMap->data()->cell(i, j);
+    }
+  }
+
+  // Make step.
+  int currentValue{0};
+  auto data = mColorMap->data();
+
+  auto needChange = [&currentValue](const double &value) -> bool {
+    if (currentValue == 2.0 && value == 0.0)
+      return true;
+
+    return currentValue < value;
+  };
+
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      currentValue = std::floor(data->cell(i, j));
+      bool left = (j != 0) ? needChange(tmpMatrix[i][j - 1]) : false;
+      bool up = (i != 0) ? needChange(tmpMatrix[i - 1][j]) : false;
+
+      bool right = (j != size - 1) ? needChange(tmpMatrix[i][j + 1]) : false;
+      bool down = (i != size - 1) ? needChange(tmpMatrix[i + 1][j]) : false;
+
+      if (left | right | down | up)
+        data->setCell(i, j, (currentValue + 1) % 3);
+    }
+  }
+
+  // Update plot.
   mUi->plot->replot();
 }
