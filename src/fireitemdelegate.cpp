@@ -7,7 +7,7 @@ void FireItemDelegate::paint(QPainter *painter,
                              const QStyleOptionViewItem &option,
                              const QModelIndex &index) const {
   // Load icon and change
-  QIcon fireIcon{"://icons/fire-solid.svg"};
+  QIcon fireIcon{loadIcon("://icons/fire-solid.svg")};
 
   auto fireStep = index.data().toInt();
   switch (fireStep) {
@@ -31,4 +31,13 @@ void FireItemDelegate::paint(QPainter *painter,
     break;
   }
   }
+}
+
+QIcon FireItemDelegate::loadIcon(const QString &fileName) const {
+  QPixmap pixmap("://icons/fire-solid.svg");
+  auto mask =
+      pixmap.createMaskFromColor(QColor("black"), Qt::MaskMode::MaskOutColor);
+  pixmap.fill(QApplication::palette().text().color());
+  pixmap.setMask(mask);
+  return pixmap;
 }
