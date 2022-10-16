@@ -1,0 +1,23 @@
+= Пожар в степи
+Математическая модель
+
+== Сборка
+Проект сделан с помощью qt. Для сборки может использоваться `qt6/qt5`.
+Также используется `cmake`.
+
+Установка зависимостей для Fedora
+[source=sh]
+----
+dnf install qt6-qtbase-devel qt6-qtbase-gui qt6-qtsvg-devel cmake ninja-build clang git
+----
+
+Собрать приложение можно с использованием следующих команд
+[source=sh]
+----
+git clone https://github.com/Artem535/Fire-in-the-steppe-math-model.git
+cd Fire-in-the-steppe-math-model
+mkdir build
+cd build
+cmake ../src -G Ninja  -DCMAKE_BUILD_TYPE=MinSizeRel 
+ninja
+----
