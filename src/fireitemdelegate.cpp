@@ -34,7 +34,7 @@ void FireItemDelegate::paint(QPainter *painter,
 }
 
 QIcon FireItemDelegate::loadIcon(const QString &fileName) const {
-  QPixmap pixmap("://icons/fire-solid.svg");
+  QPixmap pixmap(fileName);
   auto mask =
       pixmap.createMaskFromColor(QColor("black"), Qt::MaskMode::MaskOutColor);
   pixmap.fill(QApplication::palette().text().color());

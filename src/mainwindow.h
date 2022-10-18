@@ -33,9 +33,9 @@ private:
   Ui::MainWindow *mUi;
   QTimer mTimer;
 
-  std::unique_ptr<QCPColorMap> mColorMap;
-  std::unique_ptr<QCPColorScale> mColorScale;
-  std::unique_ptr<QCPMarginGroup> mPlotScaleGroup;
+  QCPColorMap *mColorMap;
+  QCPColorScale *mColorScale;
+  QCPMarginGroup *mPlotScaleGroup;
 
   std::unique_ptr<FireTableModel> mMathModel;
 };

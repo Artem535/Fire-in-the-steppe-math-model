@@ -63,7 +63,7 @@ void MainWindow::setupPlot() {
     plot->setOpenGl(true);
 
   // xAxis2 because
-  mColorMap = std::make_unique<QCPColorMap>(plot->xAxis, plot->yAxis);
+  mColorMap = new QCPColorMap(plot->xAxis, plot->yAxis);
   plot->yAxis->setRangeReversed(true);
   // Interpolate improve quality.
   mColorMap->setInterpolate(false);
@@ -83,18 +83,18 @@ void MainWindow::setupPlot() {
   }
 
   // Setup scale.
-  mColorScale = std::make_unique<QCPColorScale>(plot);
-  plot->plotLayout()->addElement(0, 1, mColorScale.get());
+  mColorScale = new QCPColorScale(plot);
+  plot->plotLayout()->addElement(0, 1, mColorScale);
   mColorScale->setType(QCPAxis::atRight);
-  mColorMap->setColorScale(mColorScale.get());
+  mColorMap->setColorScale(mColorScale);
   mColorScale->setGradient(QCPColorGradient::gpHot);
   mColorScale->setDataRange(
       QCPRange(Constans::Plot::minRangeValue, Constans::Plot::maxRangeValue));
 
   // Setup group.
-  mPlotScaleGroup = std::make_unique<QCPMarginGroup>(plot);
+  mPlotScaleGroup = new QCPMarginGroup(plot);
   plot->axisRect()->setMarginGroup(QCP::msBottom | QCP::msTop,
-                                   mPlotScaleGroup.get());
+                                   mPlotScaleGroup);
 
   mColorMap->rescaleDataRange();
   plot->rescaleAxes(true);
